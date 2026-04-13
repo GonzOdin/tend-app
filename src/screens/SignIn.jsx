@@ -3,16 +3,31 @@ import { supabase } from '../lib/supabase'
 import './SignIn.css'
 
 export default function SignIn() {
-  const [mode, setMode] = useState('signin') // 'signin' | 'signup'
+  const [mode, setMode] = useState('signin') // 'signin' | 'signup' | 'forgot'
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [resetSent, setResetSent] = useState(false)
 
   function switchMode(next) {
     setMode(next)
     setError(null)
+  }
+
+  async function handleForgot(e) {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: window.location.origin,
+    })
+
+    setLoading(false)
+    if (error) setError(error.message)
+    else setResetSent(true)
   }
 
   async function handleSignIn(e) {
@@ -96,11 +111,60 @@ export default function SignIn() {
             <button
               type="button"
               className="signin__switch"
+              onClick={() => switchMode('forgot')}
+            >
+              Forgot password?
+            </button>
+
+            <button
+              type="button"
+              className="signin__switch"
               onClick={() => switchMode('signup')}
             >
               New here? Create an account
             </button>
           </form>
+        ) : mode === 'forgot' ? (
+          resetSent ? (
+            <div>
+              <p className="signin__subtitle">
+                Reset link sent to <strong>{email}</strong>. Check your email and tap the link.
+              </p>
+              <button type="button" className="signin__switch" onClick={() => { setResetSent(false); switchMode('signin') }}>
+                Back to sign in
+              </button>
+            </div>
+          ) : (
+            <form className="signin__form" onSubmit={handleForgot}>
+              <div className="signin__field">
+                <label className="signin__label" htmlFor="email-forgot">Email</label>
+                <input
+                  id="email-forgot"
+                  className="signin__input"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  autoComplete="email"
+                  required
+                />
+              </div>
+
+              {error && <p className="signin__error">{error}</p>}
+
+              <button
+                className="signin__submit"
+                type="submit"
+                disabled={loading || !email.trim()}
+              >
+                {loading ? 'Sending…' : 'Send reset link'}
+              </button>
+
+              <button type="button" className="signin__switch" onClick={() => switchMode('signin')}>
+                Back to sign in
+              </button>
+            </form>
+          )
         ) : (
           <form className="signin__form" onSubmit={handleSignUp}>
             <div className="signin__field">

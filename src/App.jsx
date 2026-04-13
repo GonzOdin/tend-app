@@ -4,6 +4,7 @@ import Garden from './screens/Garden'
 import Map from './screens/Map'
 import Schedule from './screens/Schedule'
 import SignIn from './screens/SignIn'
+import SetPassword from './screens/SetPassword'
 import './styles/tokens.css'
 import './App.css'
 
@@ -16,20 +17,21 @@ const TABS = [
 export default function App() {
   const [activeTab, setActiveTab] = useState('garden')
   const [user, setUser] = useState(undefined) // undefined = loading, null = signed out
+  const [needsPasswordReset, setNeedsPasswordReset] = useState(false)
 
   useEffect(() => {
-    // Check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
     })
 
-    // Listen for auth changes (including magic link redirect)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         const currentUser = session?.user ?? null
         setUser(currentUser)
 
-        if (event === 'SIGNED_IN' && currentUser) {
+        if (event === 'PASSWORD_RECOVERY') {
+          setNeedsPasswordReset(true)
+        } else if (event === 'SIGNED_IN' && currentUser) {
           await ensureUserProfile(currentUser)
         }
       }
@@ -51,6 +53,16 @@ export default function App() {
       <div className="app">
         <main className="app__content">
           <SignIn />
+        </main>
+      </div>
+    )
+  }
+
+  if (needsPasswordReset) {
+    return (
+      <div className="app">
+        <main className="app__content">
+          <SetPassword onDone={() => setNeedsPasswordReset(false)} />
         </main>
       </div>
     )

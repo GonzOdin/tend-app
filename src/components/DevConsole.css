@@ -1,0 +1,122 @@
+.dev-console {
+  position: absolute;
+  bottom: var(--tab-bar-height);
+  left: 0;
+  right: 0;
+  height: 50vh;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid #444;
+}
+
+.dev-console__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: #111;
+  border-bottom: 1px solid #333;
+  flex-shrink: 0;
+}
+
+.dev-console__title {
+  color: #6BAA3E;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.dev-console__close {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  font-family: inherit;
+}
+
+.dev-console__log {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dev-console__empty {
+  color: #555;
+  font-style: italic;
+}
+
+.dev-console__entry {
+  display: flex;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+.dev-console__time {
+  color: #555;
+  flex-shrink: 0;
+}
+
+.dev-console__msg {
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.dev-console__entry--info  .dev-console__msg { color: #e0e0e0; }
+.dev-console__entry--warn  .dev-console__msg { color: #E2613A; }
+.dev-console__entry--error .dev-console__msg { color: #ff6b6b; }
+
+.dev-console__actions {
+  padding: 8px 12px;
+  border-top: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+  background: #111;
+}
+
+.dev-console__row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.dev-console__btn {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #ccc;
+  padding: 4px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  white-space: nowrap;
+  transition: background 100ms ease;
+}
+
+.dev-console__btn:hover {
+  background: #333;
+  color: #6BAA3E;
+  border-color: #6BAA3E;
+}
+
+.dev-console__select {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #ccc;
+  padding: 4px 6px;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 11px;
+  flex: 1;
+  min-width: 0;
+}

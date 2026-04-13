@@ -5,6 +5,7 @@ import Map from './screens/Map'
 import Schedule from './screens/Schedule'
 import SignIn from './screens/SignIn'
 import SetPassword from './screens/SetPassword'
+import DevConsole from './components/DevConsole'
 import './styles/tokens.css'
 import './App.css'
 
@@ -77,6 +78,8 @@ export default function App() {
         {activeTab === 'map'      && <Map />}
         {activeTab === 'schedule' && <Schedule />}
       </main>
+
+      <DevConsole user={user} />
 
       <nav className="tab-bar">
         {TABS.map(tab => (

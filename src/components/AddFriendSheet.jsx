@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import BottomSheet from './BottomSheet'
 import { supabase } from '../lib/supabase'
+import { devError } from '../lib/devLog'
 import './AddFriendSheet.css'
 
 const EMOJI_OPTIONS = [
@@ -33,6 +34,7 @@ export default function AddFriendSheet({ isOpen, onClose, currentUser, onFriendA
       onFriendAdded()
       onClose()
     } catch (e) {
+      devError(`AddFriend: ${e?.message || e}`)
       setError(e?.message || 'Something went wrong — try again.')
     } finally {
       setSaving(false)

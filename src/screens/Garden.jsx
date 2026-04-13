@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { devLog, devError } from '../lib/devLog'
 import PlotCard from '../components/PlotCard'
 import FriendPopup from '../components/FriendPopup'
 import TendSubsheet from '../components/TendSubsheet'
@@ -43,7 +44,7 @@ export default function Garden({ user, onNavigate }) {
     try {
       await loadGardenDataInner()
     } catch (err) {
-      console.error('Garden load error:', err)
+      devError(`Garden load: ${err?.message || err}`)
     } finally {
       setLoading(false)
     }

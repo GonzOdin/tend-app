@@ -20,8 +20,10 @@ export default function App() {
   const [needsPasswordReset, setNeedsPasswordReset] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      if (currentUser) await ensureUserProfile(currentUser)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

@@ -138,3 +138,117 @@
   margin: 0;
   line-height: 1.5;
 }
+
+.fp-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.fp-section__header .fp-section__title {
+  margin-bottom: 0;
+}
+
+.fp-section__add {
+  font-size: var(--text-sm);
+  color: var(--color-ember);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-body);
+  font-weight: var(--weight-medium);
+}
+
+.fp-section__note {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin: var(--space-2) 0 0;
+  font-style: italic;
+}
+
+/* Reminder list */
+.fp-reminder-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.fp-reminder-row {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+/* Plan list */
+.fp-plan-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.fp-plan-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.fp-plan-row__content {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+.fp-plan-row__remove {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 var(--space-1);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Add plan form */
+.fp-add-plan {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.fp-add-plan__input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  background: var(--color-warm-white);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color var(--duration-fast) ease;
+}
+
+.fp-add-plan__input:focus {
+  border-color: var(--color-ember);
+}
+
+.fp-add-plan__actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.fp-add-plan__actions .btn {
+  flex: 1;
+}

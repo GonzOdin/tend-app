@@ -1,0 +1,88 @@
+.add-reminder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-bottom: var(--space-2);
+}
+
+.add-reminder__types {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.add-reminder__type {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  background: var(--color-warm-white);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--duration-fast) ease, background var(--duration-fast) ease;
+}
+
+.add-reminder__type--selected {
+  border-color: var(--color-ember);
+  background: var(--color-seedling);
+}
+
+.add-reminder__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.add-reminder__input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  background: var(--color-warm-white);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color var(--duration-fast) ease;
+}
+
+.add-reminder__input:focus {
+  border-color: var(--color-ember);
+}
+
+.add-reminder__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.add-reminder__chip {
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  background: var(--color-warm-white);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) ease, background var(--duration-fast) ease;
+}
+
+.add-reminder__chip--selected {
+  border-color: var(--color-ember);
+  background: var(--color-seedling);
+  color: var(--color-soil);
+}
+
+.add-reminder__note {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-style: italic;
+}

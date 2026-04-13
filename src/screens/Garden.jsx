@@ -4,7 +4,20 @@ import PlotCard from '../components/PlotCard'
 import FriendPopup from '../components/FriendPopup'
 import TendSubsheet from '../components/TendSubsheet'
 import ReachOutSubsheet from '../components/ReachOutSubsheet'
+import AddFriendSheet from '../components/AddFriendSheet'
+import AddReminderSheet from '../components/AddReminderSheet'
+import PointsToast from '../components/PointsToast'
 import './Garden.css'
+
+const STAGE_ORDER = ['bare', 'seedling', 'growing', 'thriving', 'lush']
+
+function getGrowthStage(totalActions) {
+  if (totalActions >= 50) return 'lush'
+  if (totalActions >= 25) return 'thriving'
+  if (totalActions >= 10) return 'growing'
+  if (totalActions >= 3)  return 'seedling'
+  return 'bare'
+}
 
 export default function Garden({ user, onNavigate }) {
   const [selfPlot, setSelfPlot] = useState(null)
@@ -17,6 +30,8 @@ export default function Garden({ user, onNavigate }) {
   const [completedToday, setCompletedToday] = useState(new Set())
   const [userPoints, setUserPoints] = useState(0)
   const [postTend, setPostTend] = useState(false)
+  const [pointsToast, setPointsToast] = useState({ show: false, amount: 0 })
+  const [reminderVersion, setReminderVersion] = useState(0)
 
   useEffect(() => {
     loadGardenData()
@@ -25,7 +40,6 @@ export default function Garden({ user, onNavigate }) {
   async function loadGardenData() {
     setLoading(true)
 
-    // Load user profile + points
     const { data: profile } = await supabase
       .from('users')
       .select('*')
@@ -37,7 +51,7 @@ export default function Garden({ user, onNavigate }) {
       setUserPoints(profile.points_total)
     }
 
-    // Load or create user's solo plot (friend_id is null)
+    // Load or create solo plot
     let { data: solo } = await supabase
       .from('plots')
       .select('*')
@@ -55,7 +69,7 @@ export default function Garden({ user, onNavigate }) {
     }
     setSelfPlot(solo)
 
-    // Load friend plots (plots with a friend_id, owned by this user)
+    // Load friend plots
     const { data: plots } = await supabase
       .from('plots')
       .select(`
@@ -67,7 +81,7 @@ export default function Garden({ user, onNavigate }) {
       .eq('owner_id', user.id)
       .not('friend_id', 'is', null)
 
-    // Load friendships to get status
+    // Load friendships
     const { data: friendships } = await supabase
       .from('friendships')
       .select('user_b, status')
@@ -88,7 +102,7 @@ export default function Garden({ user, onNavigate }) {
     }))
     setFriendPlots(enriched)
 
-    // Load today's tend_actions for cooldown
+    // Today's cooldown
     const todayStart = new Date()
     todayStart.setHours(0, 0, 0, 0)
 
@@ -117,13 +131,15 @@ export default function Garden({ user, onNavigate }) {
 
   async function handleActionComplete(actionKey, points) {
     const plotId = activeFriend.plotId
+    const isSelf = activeFriend.friendship_status === 'self'
     const doneKey = `${plotId}_${actionKey}`
+    const newPoints = userPoints + points
 
-    // Optimistic update
+    // Optimistic UI
     setCompletedToday(prev => new Set([...prev, doneKey]))
-    setUserPoints(prev => prev + points)
+    setUserPoints(newPoints)
 
-    // Write to Supabase
+    // Write tend_action
     await supabase.from('tend_actions').insert({
       actor_id: user.id,
       plot_id: plotId,
@@ -131,19 +147,64 @@ export default function Garden({ user, onNavigate }) {
       points_earned: points,
     })
 
+    // Update points
     await supabase
       .from('users')
-      .update({ points_total: userPoints + points })
+      .update({ points_total: newPoints })
       .eq('id', user.id)
 
-    // Also update plot last_tended_at
+    // Update plot last_tended_at
     await supabase
       .from('plots')
       .update({ last_tended_at: new Date().toISOString(), drift_state: false })
       .eq('id', plotId)
 
-    setPostTend(true)
-    setActiveSheet('reach-out')
+    // Check growth stage advancement
+    const { count } = await supabase
+      .from('tend_actions')
+      .select('*', { count: 'exact', head: true })
+      .eq('plot_id', plotId)
+
+    const newStage = getGrowthStage(count)
+    const currentStage = isSelf
+      ? selfPlot?.growth_stage
+      : friendPlots.find(f => f.plotId === plotId)?.growth_stage
+
+    if (newStage !== currentStage && STAGE_ORDER.indexOf(newStage) > STAGE_ORDER.indexOf(currentStage)) {
+      await supabase.from('plots').update({ growth_stage: newStage }).eq('id', plotId)
+      if (isSelf) {
+        setSelfPlot(prev => ({ ...prev, growth_stage: newStage }))
+      } else {
+        setFriendPlots(prev => prev.map(f =>
+          f.plotId === plotId ? { ...f, growth_stage: newStage } : f
+        ))
+        setActiveFriend(prev => prev ? { ...prev, growth_stage: newStage } : prev)
+      }
+    }
+
+    // Points toast
+    setPointsToast({ show: true, amount: points })
+
+    // Navigation
+    if (isSelf) {
+      closeAll()
+    } else {
+      setPostTend(true)
+      setActiveSheet('reach-out')
+    }
+  }
+
+  function handleFriendAdded() {
+    loadGardenData()
+  }
+
+  function handleAddReminder() {
+    setActiveSheet('add-reminder')
+  }
+
+  function handleReminderAdded() {
+    setReminderVersion(v => v + 1)
+    setActiveSheet('friend-popup')
   }
 
   const selfFriend = selfPlot
@@ -164,9 +225,11 @@ export default function Garden({ user, onNavigate }) {
         <h1 className="garden__title">
           {userProfile ? `${userProfile.display_name}'s Garden` : 'Your Garden'}
         </h1>
-        <div className="garden__points">
-          <span className="garden__points-value">{userPoints}</span>
-          <span className="garden__points-label">pts</span>
+        <div className="garden__header-right">
+          <div className="garden__points">
+            <span className="garden__points-value">{userPoints}</span>
+            <span className="garden__points-label">pts</span>
+          </div>
         </div>
       </div>
 
@@ -176,14 +239,12 @@ export default function Garden({ user, onNavigate }) {
         </div>
       ) : (
         <div className="garden__grid">
-          {/* Your own plot — full width at top */}
           {selfFriend && (
             <div className="garden__self-plot">
               <PlotCard plot={selfFriend} isSelf onClick={() => openFriendPopup(selfFriend)} />
             </div>
           )}
 
-          {/* Friend plots */}
           {friendPlots.length > 0 && (
             <div className="garden__friend-grid">
               {friendPlots.map(friend => (
@@ -197,6 +258,13 @@ export default function Garden({ user, onNavigate }) {
             </div>
           )}
 
+          <button
+            className="garden__add-friend"
+            onClick={() => setActiveSheet('add-friend')}
+          >
+            + add a friend
+          </button>
+
           {friendPlots.length === 0 && (
             <p className="garden__empty">
               Your garden is yours for now. Add a friend to share it.
@@ -205,12 +273,21 @@ export default function Garden({ user, onNavigate }) {
         </div>
       )}
 
+      <PointsToast
+        amount={pointsToast.amount}
+        show={pointsToast.show}
+        onDone={() => setPointsToast({ show: false, amount: 0 })}
+      />
+
       <FriendPopup
         isOpen={activeSheet === 'friend-popup'}
         onClose={closeAll}
         friend={activeFriend}
+        currentUser={user}
+        reminderVersion={reminderVersion}
         onTend={() => setActiveSheet('tend')}
         onReachOut={() => { setPostTend(false); setActiveSheet('reach-out') }}
+        onAddReminder={handleAddReminder}
       />
 
       <TendSubsheet
@@ -227,6 +304,21 @@ export default function Garden({ user, onNavigate }) {
         friend={activeFriend}
         postTend={postTend}
         onNavigate={onNavigate}
+      />
+
+      <AddFriendSheet
+        isOpen={activeSheet === 'add-friend'}
+        onClose={() => setActiveSheet(null)}
+        currentUser={user}
+        onFriendAdded={handleFriendAdded}
+      />
+
+      <AddReminderSheet
+        isOpen={activeSheet === 'add-reminder'}
+        onClose={() => setActiveSheet('friend-popup')}
+        currentUser={user}
+        friend={activeFriend}
+        onReminderAdded={handleReminderAdded}
       />
     </div>
   )

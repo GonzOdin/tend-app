@@ -48,10 +48,10 @@ export default function TendSubsheet({ isOpen, onClose, friend, completedToday, 
   }
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title={`Tend ${friend.display_name}'s plot`}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} title={friend.friendship_status === 'self' ? 'Tend your plot' : `Tend ${friend.display_name}'s plot`}>
       <div className="tend-actions">
         {availableActions.map(([key, action]) => {
-          const doneKey = `${friend.id}_${key}`
+          const doneKey = `${friend.plotId}_${key}`
           const isDone = completedToday.has(doneKey)
           const isAnimating = pending === key
 

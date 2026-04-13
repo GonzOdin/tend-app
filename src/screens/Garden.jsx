@@ -40,11 +40,21 @@ export default function Garden({ user, onNavigate }) {
   async function loadGardenData() {
     setLoading(true)
 
+    try {
+      await loadGardenDataInner()
+    } catch (err) {
+      console.error('Garden load error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function loadGardenDataInner() {
     const { data: profile } = await supabase
       .from('users')
       .select('*')
       .eq('id', user.id)
-      .single()
+      .maybeSingle()
 
     if (profile) {
       setUserProfile(profile)
@@ -115,8 +125,6 @@ export default function Garden({ user, onNavigate }) {
     if (actions) {
       setCompletedToday(new Set(actions.map(a => `${a.plot_id}_${a.action_type}`)))
     }
-
-    setLoading(false)
   }
 
   function openFriendPopup(friend) {

@@ -63,7 +63,7 @@ export default function Garden({ user, onNavigate }) {
       { data: actions },
     ] = await Promise.all([
       supabase.from('users').select('*').eq('id', user.id).maybeSingle(),
-      supabase.from('plots').select('*').eq('owner_id', user.id).is('friend_id', null).maybeSingle(),
+      supabase.from('plots').select('*').eq('owner_id', user.id).is('friend_id', null).order('created_at', { ascending: true }).limit(1).maybeSingle(),
       supabase.from('plots').select(`*, friend:users!plots_friend_id_fkey (id, display_name, avatar_emoji)`).eq('owner_id', user.id).not('friend_id', 'is', null),
       supabase.from('friendships').select('user_b, status').eq('user_a', user.id),
       supabase.from('tend_actions').select('plot_id, action_type').eq('actor_id', user.id).gte('created_at', todayStart.toISOString()),

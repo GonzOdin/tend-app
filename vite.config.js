@@ -22,7 +22,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Cache-first for app shell; network-first for API calls
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,

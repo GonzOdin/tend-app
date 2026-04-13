@@ -21,25 +21,12 @@ export default function AddFriendSheet({ isOpen, onClose, currentUser, onFriendA
     setError(null)
 
     try {
-      // Create virtual user
-      const { data: virtualUser, error: userErr } = await supabase
-        .from('users')
-        .insert({ display_name: name.trim(), avatar_emoji: emoji })
-        .select()
-        .single()
-      if (userErr) throw userErr
-
-      // Create their plot owned by current user
-      const { error: plotErr } = await supabase
-        .from('plots')
-        .insert({ owner_id: currentUser.id, friend_id: virtualUser.id })
-      if (plotErr) throw plotErr
-
-      // Create friendship (virtual = one-sided, they haven't joined yet)
-      const { error: friendErr } = await supabase
-        .from('friendships')
-        .insert({ user_a: currentUser.id, user_b: virtualUser.id, status: 'virtual' })
-      if (friendErr) throw friendErr
+      const { error } = await supabase.rpc('create_virtual_friend', {
+        p_owner_id: currentUser.id,
+        p_display_name: name.trim(),
+        p_avatar_emoji: emoji,
+      })
+      if (error) throw error
 
       setName('')
       setEmoji('🌱')

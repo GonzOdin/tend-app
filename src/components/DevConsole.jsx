@@ -77,7 +77,9 @@ export default function DevConsole({ user }) {
   if (!open) return null
 
   return (
-    <div className="dev-console">
+    <>
+      <div className="dev-console__backdrop" onClick={() => setOpen(false)} />
+      <div className="dev-console">
       <div className="dev-console__bar">
         <span className="dev-console__title">~ dev console</span>
         <button className="dev-console__close" onClick={() => setOpen(false)}>✕</button>
@@ -130,5 +132,6 @@ export default function DevConsole({ user }) {
         </div>
       </div>
     </div>
+    </>
   )
 }

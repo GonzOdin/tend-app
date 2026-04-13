@@ -1,0 +1,106 @@
+.signin {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: var(--color-warm-white);
+}
+
+.signin__card {
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.signin__logo,
+.signin__sent-emoji {
+  font-size: 3rem;
+  margin-bottom: var(--space-4);
+  display: block;
+}
+
+.signin__title {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-2);
+}
+
+.signin__subtitle {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-8);
+  line-height: 1.5;
+}
+
+.signin__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.signin__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: left;
+}
+
+.signin__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+}
+
+.signin__input {
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  background: white;
+  outline: none;
+  transition: border-color var(--duration-fast) ease;
+}
+
+.signin__input:focus {
+  border-color: var(--color-ember);
+}
+
+.signin__error {
+  font-size: var(--text-sm);
+  color: var(--color-ember);
+  margin: 0;
+}
+
+.signin__submit {
+  padding: var(--space-4);
+  background: var(--color-ember);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: opacity var(--duration-fast) ease;
+  margin-top: var(--space-2);
+}
+
+.signin__submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.signin__resend {
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  margin-top: var(--space-4);
+  text-decoration: underline;
+}

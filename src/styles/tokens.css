@@ -1,0 +1,72 @@
+/* Tend — Design Tokens
+   Warm palette. Late-afternoon sunlight feel.
+   Update hex values here; everything in the app references these vars. */
+
+:root {
+  /* Color */
+  --color-soil: #7A5C4E;          /* earthy brown — plot borders, headings */
+  --color-leaf: #6BAA3E;          /* healthy green — active states, ready indicators */
+  --color-sky: #A8D4E6;           /* soft blue — map tint, calm backgrounds */
+  --color-warm-white: #FDF6EC;    /* off-white — app background */
+  --color-ember: #E2613A;         /* warm orange-red — primary actions, fire pit */
+  --color-drift: #B0AC9E;         /* muted grey-green — drifting plot overlay */
+  --color-seedling: #D4EDBB;      /* pale green — bare/seedling plot tint */
+  --color-text-primary: #3D2B1F;  /* dark warm brown — body text */
+  --color-text-secondary: #8C7B70; /* muted warm — supporting text, labels */
+  --color-surface: #FFF9F0;       /* card/sheet surface, slightly warmer than bg */
+  --color-border: #E8D9C8;        /* subtle border for cards and dividers */
+  --color-success: #5A9E47;       /* confirmed action, done-today checkmark */
+  --color-points: #C97D2A;        /* points badge, economy accents */
+
+  /* Typography */
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-pixel: 'Press Start 2P', monospace; /* plot labels, point values, badges only */
+
+  --text-xs:   0.75rem;   /* 12px — pixel font labels, badges */
+  --text-sm:   0.875rem;  /* 14px — secondary text, history items */
+  --text-base: 1rem;      /* 16px — body */
+  --text-lg:   1.25rem;   /* 20px — sheet titles */
+  --text-xl:   1.5rem;    /* 24px — screen headings */
+
+  --weight-normal: 400;
+  --weight-medium: 600;
+  --weight-bold:   700;
+
+  /* Spacing (8px base unit) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 4px rgba(61, 43, 31, 0.08);
+  --shadow-sheet: 0 -4px 24px rgba(61, 43, 31, 0.12);
+
+  /* Animation */
+  --duration-fast: 150ms;
+  --duration-sheet-open: 280ms;
+  --duration-sheet-close: 220ms;
+  --duration-tend-delay: 600ms;
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Tab bar */
+  --tab-bar-height: 56px;
+
+  /* Z-index scale */
+  --z-map: 1;
+  --z-tab-bar: 10;
+  --z-sheet: 20;
+  --z-nudge: 30;
+  --z-toast: 40;
+}

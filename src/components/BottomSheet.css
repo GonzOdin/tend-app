@@ -1,0 +1,55 @@
+.sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  z-index: var(--z-sheet);
+  pointer-events: none;
+  transition: background var(--duration-sheet-open) ease;
+}
+
+.sheet-backdrop--open {
+  background: rgba(61, 43, 31, 0.45);
+  pointer-events: all;
+}
+
+.sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  max-height: 80vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  transform: translateY(100%);
+  transition: transform var(--duration-sheet-open) var(--ease-sheet);
+  box-shadow: var(--shadow-sheet);
+  padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
+}
+
+.sheet--open {
+  transform: translateY(0);
+}
+
+.sheet__handle {
+  width: 36px;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  margin: var(--space-3) auto var(--space-2);
+  flex-shrink: 0;
+}
+
+.sheet__title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+  text-align: center;
+  padding: 0 var(--space-6) var(--space-3);
+  margin: 0;
+}
+
+.sheet__content {
+  padding: 0 var(--space-4);
+}

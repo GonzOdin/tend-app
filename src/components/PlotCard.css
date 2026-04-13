@@ -1,0 +1,109 @@
+.plot-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  transition: transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+  box-shadow: var(--shadow-card);
+  width: 100%;
+}
+
+.plot-card:active {
+  transform: scale(0.97);
+}
+
+.plot-card--self {
+  border-color: var(--color-leaf);
+  border-width: 2px;
+}
+
+.plot-card--drifting {
+  filter: saturate(0.35) brightness(0.92);
+  transition: filter 2s ease;
+}
+
+.plot-card--virtual {
+  filter: opacity(0.75);
+}
+
+.plot-card__stage-label {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--color-text-secondary);
+  padding: var(--space-2) var(--space-3) 0;
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+}
+
+.plot-card__plot {
+  flex: 1;
+  padding: var(--space-3);
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    to bottom,
+    var(--color-seedling) 0%,
+    var(--color-warm-white) 100%
+  );
+}
+
+.plot-card--self .plot-card__plot {
+  background: linear-gradient(
+    to bottom,
+    #d4edbb 0%,
+    var(--color-warm-white) 100%
+  );
+}
+
+.plot-card__elements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.plot-card__element {
+  font-size: 1.5rem;
+  line-height: 1;
+  display: inline-block;
+}
+
+.plot-card__footer {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-top: 1px solid var(--color-border);
+}
+
+.plot-card__name {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+.plot-card__virtual-badge,
+.plot-card__drift-badge {
+  font-size: 10px;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-weight: var(--weight-medium);
+}
+
+.plot-card__virtual-badge {
+  background: var(--color-sky);
+  color: #4a7a8a;
+}
+
+.plot-card__drift-badge {
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+}

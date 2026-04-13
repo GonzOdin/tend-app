@@ -32,8 +32,8 @@ export default function AddFriendSheet({ isOpen, onClose, currentUser, onFriendA
       setEmoji('🌱')
       onFriendAdded()
       onClose()
-    } catch {
-      setError('Something went wrong — try again.')
+    } catch (e) {
+      setError(e?.message || 'Something went wrong — try again.')
     } finally {
       setSaving(false)
     }

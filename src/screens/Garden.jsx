@@ -50,25 +50,31 @@ export default function Garden({ user, onNavigate }) {
   }
 
   async function loadGardenDataInner() {
-    const { data: profile } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle()
+    const todayStart = new Date()
+    todayStart.setHours(0, 0, 0, 0)
+
+    // Run all independent queries in parallel
+    const [
+      { data: profile },
+      { data: soloResult },
+      { data: plots },
+      { data: friendships },
+      { data: actions },
+    ] = await Promise.all([
+      supabase.from('users').select('*').eq('id', user.id).maybeSingle(),
+      supabase.from('plots').select('*').eq('owner_id', user.id).is('friend_id', null).maybeSingle(),
+      supabase.from('plots').select(`*, friend:users!plots_friend_id_fkey (id, display_name, avatar_emoji)`).eq('owner_id', user.id).not('friend_id', 'is', null),
+      supabase.from('friendships').select('user_b, status').eq('user_a', user.id),
+      supabase.from('tend_actions').select('plot_id, action_type').eq('actor_id', user.id).gte('created_at', todayStart.toISOString()),
+    ])
 
     if (profile) {
       setUserProfile(profile)
       setUserPoints(profile.points_total)
     }
 
-    // Load or create solo plot
-    let { data: solo } = await supabase
-      .from('plots')
-      .select('*')
-      .eq('owner_id', user.id)
-      .is('friend_id', null)
-      .maybeSingle()
-
+    // Create solo plot if missing
+    let solo = soloResult
     if (!solo) {
       const { data: created } = await supabase
         .from('plots')
@@ -78,24 +84,6 @@ export default function Garden({ user, onNavigate }) {
       solo = created
     }
     setSelfPlot(solo)
-
-    // Load friend plots
-    const { data: plots } = await supabase
-      .from('plots')
-      .select(`
-        *,
-        friend:users!plots_friend_id_fkey (
-          id, display_name, avatar_emoji
-        )
-      `)
-      .eq('owner_id', user.id)
-      .not('friend_id', 'is', null)
-
-    // Load friendships
-    const { data: friendships } = await supabase
-      .from('friendships')
-      .select('user_b, status')
-      .eq('user_a', user.id)
 
     const friendshipMap = {}
     if (friendships) {
@@ -111,16 +99,6 @@ export default function Garden({ user, onNavigate }) {
       pets: p.pets || [],
     }))
     setFriendPlots(enriched)
-
-    // Today's cooldown
-    const todayStart = new Date()
-    todayStart.setHours(0, 0, 0, 0)
-
-    const { data: actions } = await supabase
-      .from('tend_actions')
-      .select('plot_id, action_type')
-      .eq('actor_id', user.id)
-      .gte('created_at', todayStart.toISOString())
 
     if (actions) {
       setCompletedToday(new Set(actions.map(a => `${a.plot_id}_${a.action_type}`)))

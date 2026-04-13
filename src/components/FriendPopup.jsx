@@ -9,9 +9,9 @@ const STAGE_LABELS = { bare: 'Bare patch', seedling: 'Seedling', growing: 'Growi
 const STAGE_ELEMENTS = {
   bare:     ['🌱'],
   seedling: ['🌿', '🌿'],
-  growing:  ['🌸', '🌸', '🪨'],
-  thriving: ['🌳', '🌸', '🔥'],
-  lush:     ['🌳', '🌸', '🔥', '🏡'],
+  growing:  ['🌿', '🌼', '🌿'],
+  thriving: ['🌳', '🌸', '🏡', '🌻'],
+  lush:     ['🌳', '🌸', '🌻', '🏡', '🌼'],
 }
 
 const PET_EMOJI = { cat: '🐱', dog: '🐶', fish: '🐠' }
@@ -51,6 +51,8 @@ export default function FriendPopup({ isOpen, onClose, friend, currentUser, onTe
   const [showAddPlan, setShowAddPlan] = useState(false)
   const [newPlanLabel, setNewPlanLabel] = useState('')
   const [newPlanDate, setNewPlanDate] = useState('')
+  const [editingPhone, setEditingPhone] = useState(false)
+  const [phoneInput, setPhoneInput] = useState('')
 
   const isSelf = friend?.friendship_status === 'self'
 
@@ -71,6 +73,8 @@ export default function FriendPopup({ isOpen, onClose, friend, currentUser, onTe
     setShowAddPlan(false)
     setNewPlanLabel('')
     setNewPlanDate('')
+    setEditingPhone(false)
+    setPhoneInput(friend.phone || '')
   }, [isOpen, friend?.id])
 
   if (!friend) return null
@@ -80,6 +84,12 @@ export default function FriendPopup({ isOpen, onClose, friend, currentUser, onTe
   const elements = STAGE_ELEMENTS[growth_stage] || STAGE_ELEMENTS.bare
   const isDrifting = drift_state
   const isVirtual = friendship_status === 'virtual'
+
+  async function handleSavePhone() {
+    await supabase.from('users').update({ phone: phoneInput.trim() || null }).eq('id', friend.id)
+    friend.phone = phoneInput.trim() || null
+    setEditingPhone(false)
+  }
 
   function handleAddPlan() {
     if (!newPlanLabel.trim()) return
@@ -137,6 +147,32 @@ export default function FriendPopup({ isOpen, onClose, friend, currentUser, onTe
         </div>
         <span className="fp-stage-label">{STAGE_LABELS[growth_stage]}</span>
       </div>
+
+      {/* Phone */}
+      {!isSelf && (
+        <div className="fp-phone">
+          {editingPhone ? (
+            <div className="fp-phone__edit">
+              <input
+                className="fp-phone__input"
+                type="tel"
+                placeholder="+1 555 000 0000"
+                value={phoneInput}
+                onChange={e => setPhoneInput(e.target.value)}
+                autoFocus
+              />
+              <button className="fp-phone__save" onClick={handleSavePhone}>save</button>
+              <button className="fp-phone__cancel" onClick={() => setEditingPhone(false)}>✕</button>
+            </div>
+          ) : (
+            <button className="fp-phone__row" onClick={() => setEditingPhone(true)}>
+              <span className="fp-phone__icon">📱</span>
+              <span className="fp-phone__value">{friend.phone || 'Add phone number'}</span>
+              <span className="fp-phone__edit-hint">edit</span>
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Primary actions */}
       <div className="fp-actions">

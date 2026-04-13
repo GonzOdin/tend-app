@@ -21,10 +21,14 @@ function getGrowthStage(totalActions) {
 }
 
 export default function Garden({ user, onNavigate }) {
-  const [selfPlot, setSelfPlot] = useState(null)
+  // Seed state from localStorage cache for instant render
+  const cachedProfile = (() => { try { return JSON.parse(localStorage.getItem(`tend_profile_${user.id}`)) } catch { return null } })()
+  const cachedSelfPlot = (() => { try { return JSON.parse(localStorage.getItem(`tend_selfplot_${user.id}`)) } catch { return null } })()
+
+  const [selfPlot, setSelfPlot] = useState(cachedSelfPlot)
   const [friendPlots, setFriendPlots] = useState([])
-  const [userProfile, setUserProfile] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [userProfile, setUserProfile] = useState(cachedProfile)
+  const [loading, setLoading] = useState(!cachedProfile || !cachedSelfPlot)
 
   const [activeSheet, setActiveSheet] = useState(null)
   const [activeFriend, setActiveFriend] = useState(null)
@@ -39,8 +43,7 @@ export default function Garden({ user, onNavigate }) {
   }, [user.id])
 
   async function loadGardenData() {
-    setLoading(true)
-
+    if (!cachedProfile || !cachedSelfPlot) setLoading(true)
     try {
       await loadGardenDataInner()
     } catch (err) {
@@ -64,7 +67,7 @@ export default function Garden({ user, onNavigate }) {
     ] = await Promise.all([
       supabase.from('users').select('*').eq('id', user.id).maybeSingle(),
       supabase.from('plots').select('*').eq('owner_id', user.id).is('friend_id', null).order('created_at', { ascending: true }).limit(1).maybeSingle(),
-      supabase.from('plots').select(`*, friend:users!plots_friend_id_fkey (id, display_name, avatar_emoji)`).eq('owner_id', user.id).not('friend_id', 'is', null),
+      supabase.from('plots').select(`*, friend:users!plots_friend_id_fkey (id, display_name, avatar_emoji, phone)`).eq('owner_id', user.id).not('friend_id', 'is', null),
       supabase.from('friendships').select('user_b, status').eq('user_a', user.id),
       supabase.from('tend_actions').select('plot_id, action_type').eq('actor_id', user.id).gte('created_at', todayStart.toISOString()),
     ])
@@ -72,6 +75,7 @@ export default function Garden({ user, onNavigate }) {
     if (profile) {
       setUserProfile(profile)
       setUserPoints(profile.points_total)
+      localStorage.setItem(`tend_profile_${user.id}`, JSON.stringify(profile))
     }
 
     // Create solo plot if missing
@@ -85,6 +89,7 @@ export default function Garden({ user, onNavigate }) {
       solo = created
     }
     setSelfPlot(solo)
+    if (solo) localStorage.setItem(`tend_selfplot_${user.id}`, JSON.stringify(solo))
 
     const friendshipMap = {}
     if (friendships) {
@@ -98,6 +103,7 @@ export default function Garden({ user, onNavigate }) {
       drift_state: p.drift_state,
       friendship_status: friendshipMap[p.friend_id] || 'virtual',
       pets: p.pets || [],
+      phone: p.friend?.phone || null,
     }))
     setFriendPlots(enriched)
 

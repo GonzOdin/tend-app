@@ -73,6 +73,16 @@
   flex-shrink: 0;
 }
 
+.reach-out__option--disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.reach-out__option--disabled:active {
+  transform: none;
+  border-color: var(--color-border);
+}
+
 .reach-out__dismiss {
   display: block;
   width: 100%;

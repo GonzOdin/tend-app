@@ -2,7 +2,7 @@ import BottomSheet from './BottomSheet'
 import './ReachOutSubsheet.css'
 
 const REACH_OUT_OPTIONS = [
-  { key: 'hello',    emoji: '👋', label: 'Quick hello',       description: 'Low pressure, just checking in' },
+  { key: 'hello',    emoji: '👋', label: 'Quick hello',        description: 'Open a text message' },
   { key: 'plan',     emoji: '🗓️', label: 'Plan something',    description: 'Open schedule tab' },
   { key: 'map',      emoji: '📍', label: 'See where they are', description: 'Open map tab' },
   { key: 'gift',     emoji: '🎁', label: 'Send a gift',        description: 'Leave something in their plot' },
@@ -18,8 +18,13 @@ export default function ReachOutSubsheet({ isOpen, onClose, friend, postTend, on
     } else if (key === 'plan') {
       onClose()
       onNavigate('schedule')
+    } else if (key === 'hello') {
+      if (friend.phone) {
+        const body = encodeURIComponent(`Hey${friend.display_name ? ` ${friend.display_name}` : ''}, thinking of you 🌱`)
+        window.location.href = `sms:${friend.phone}?body=${body}`
+      }
+      onClose()
     } else {
-      // hello + gift: close for now, wired in later stages
       onClose()
     }
   }
@@ -37,20 +42,25 @@ export default function ReachOutSubsheet({ isOpen, onClose, friend, postTend, on
       )}
 
       <div className="reach-out__options">
-        {REACH_OUT_OPTIONS.map(option => (
-          <button
-            key={option.key}
-            className="reach-out__option"
-            onClick={() => handleOption(option.key)}
-          >
-            <span className="reach-out__option-emoji">{option.emoji}</span>
-            <div className="reach-out__option-text">
-              <span className="reach-out__option-label">{option.label}</span>
-              <span className="reach-out__option-description">{option.description}</span>
-            </div>
-            <span className="reach-out__option-arrow">›</span>
-          </button>
-        ))}
+        {REACH_OUT_OPTIONS.map(option => {
+          const disabled = option.key === 'hello' && !friend.phone
+          return (
+            <button
+              key={option.key}
+              className={`reach-out__option ${disabled ? 'reach-out__option--disabled' : ''}`}
+              onClick={() => handleOption(option.key)}
+            >
+              <span className="reach-out__option-emoji">{option.emoji}</span>
+              <div className="reach-out__option-text">
+                <span className="reach-out__option-label">{option.label}</span>
+                <span className="reach-out__option-description">
+                  {disabled ? 'Add a phone number to enable' : option.description}
+                </span>
+              </div>
+              <span className="reach-out__option-arrow">›</span>
+            </button>
+          )
+        })}
       </div>
 
       <button className="reach-out__dismiss" onClick={onClose}>

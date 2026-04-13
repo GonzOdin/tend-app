@@ -3,9 +3,9 @@ import './PlotCard.css'
 const STAGE_ELEMENTS = {
   bare:     ['🌱'],
   seedling: ['🌿', '🌿'],
-  growing:  ['🌸', '🌸', '🪨'],
-  thriving: ['🌳', '🌸', '🔥'],
-  lush:     ['🌳', '🌸', '🔥', '🏡'],
+  growing:  ['🌿', '🌼', '🌿'],
+  thriving: ['🌳', '🌸', '🏡', '🌻'],
+  lush:     ['🌳', '🌸', '🌻', '🏡', '🌼'],
 }
 
 const STAGE_LABELS = {

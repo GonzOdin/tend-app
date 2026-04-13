@@ -79,7 +79,7 @@ export default function App() {
         {activeTab === 'schedule' && <Schedule />}
       </main>
 
-      <DevConsole user={user} />
+      <DevConsole user={user} onRefresh={() => window.location.reload()} />
 
       <nav className="tab-bar">
         {TABS.map(tab => (
@@ -99,13 +99,19 @@ export default function App() {
 
 // Create a public profile for new users on first sign-in
 async function ensureUserProfile(user) {
+  const cacheKey = `tend_profile_ok_${user.id}`
+  if (localStorage.getItem(cacheKey)) return
+
   const { data: existing } = await supabase
     .from('users')
     .select('id')
     .eq('id', user.id)
     .maybeSingle()
 
-  if (existing) return
+  if (existing) {
+    localStorage.setItem(cacheKey, '1')
+    return
+  }
 
   const pendingName = localStorage.getItem('tend_pending_name')
   const displayName = pendingName || user.user_metadata?.display_name || user.email.split('@')[0]
@@ -116,4 +122,5 @@ async function ensureUserProfile(user) {
   })
 
   localStorage.removeItem('tend_pending_name')
+  localStorage.setItem(cacheKey, '1')
 }

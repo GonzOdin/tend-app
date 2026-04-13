@@ -72,6 +72,83 @@
   text-transform: lowercase;
 }
 
+/* Phone */
+.fp-phone {
+  margin-bottom: var(--space-4);
+}
+
+.fp-phone__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-warm-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-align: left;
+}
+
+.fp-phone__icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.fp-phone__value {
+  flex: 1;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+}
+
+.fp-phone__edit-hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.fp-phone__edit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.fp-phone__input {
+  flex: 1;
+  padding: var(--space-3) var(--space-3);
+  border: 1.5px solid var(--color-ember);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  background: var(--color-warm-white);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.fp-phone__save {
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-ember);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-family: var(--font-body);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fp-phone__cancel {
+  padding: var(--space-2) var(--space-2);
+  background: none;
+  border: none;
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  line-height: 1;
+}
+
 /* Action buttons */
 .fp-actions {
   display: flex;

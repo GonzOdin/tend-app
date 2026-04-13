@@ -12,6 +12,7 @@ const EMOJI_OPTIONS = [
 
 export default function AddFriendSheet({ isOpen, onClose, currentUser, onFriendAdded }) {
   const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
   const [emoji, setEmoji] = useState('🌱')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
@@ -26,10 +27,12 @@ export default function AddFriendSheet({ isOpen, onClose, currentUser, onFriendA
         p_owner_id: currentUser.id,
         p_display_name: name.trim(),
         p_avatar_emoji: emoji,
+        p_phone: phone.trim() || null,
       })
       if (error) throw error
 
       setName('')
+      setPhone('')
       setEmoji('🌱')
       onFriendAdded()
       onClose()
@@ -52,6 +55,16 @@ export default function AddFriendSheet({ isOpen, onClose, currentUser, onFriendA
           value={name}
           onChange={e => setName(e.target.value)}
           maxLength={40}
+        />
+
+        <label className="add-friend__label">Phone number <span className="add-friend__optional">(optional)</span></label>
+        <input
+          className="add-friend__input"
+          type="tel"
+          placeholder="e.g. +1 555 000 0000"
+          value={phone}
+          onChange={e => setPhone(e.target.value)}
+          autoComplete="tel"
         />
 
         <label className="add-friend__label">Pick an emoji</label>

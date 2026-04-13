@@ -5,7 +5,7 @@ import './DevConsole.css'
 
 const STAGES = ['bare', 'seedling', 'growing', 'thriving', 'lush']
 
-export default function DevConsole({ user }) {
+export default function DevConsole({ user, onRefresh }) {
   const [open, setOpen] = useState(false)
   const [logs, setLogs] = useState([])
   const [plots, setPlots] = useState([])
@@ -54,7 +54,10 @@ export default function DevConsole({ user }) {
       .eq('actor_id', user.id)
       .gte('created_at', todayStart.toISOString())
     if (error) devLog(`Clear cooldowns failed: ${error.message}`, 'error')
-    else devLog("Today's cooldowns cleared — refresh to tend again.", 'info')
+    else {
+      devLog("Cooldowns cleared — reloading…", 'info')
+      setTimeout(() => { setOpen(false); onRefresh() }, 600)
+    }
   }
 
   async function forceStage() {

@@ -91,7 +91,7 @@ async function ensureUserProfile(user) {
   if (existing) return
 
   const pendingName = localStorage.getItem('tend_pending_name')
-  const displayName = pendingName || user.email.split('@')[0]
+  const displayName = pendingName || user.user_metadata?.display_name || user.email.split('@')[0]
 
   await supabase.from('users').insert({
     id: user.id,

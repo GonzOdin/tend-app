@@ -3,57 +3,47 @@ import { supabase } from '../lib/supabase'
 import './SignIn.css'
 
 export default function SignIn() {
+  const [mode, setMode] = useState('signin') // 'signin' | 'signup'
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [sent, setSent] = useState(false)
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  async function handleSubmit(e) {
-    e.preventDefault()
-    if (!name.trim() || !email.trim()) return
+  function switchMode(next) {
+    setMode(next)
+    setError(null)
+  }
 
+  async function handleSignIn(e) {
+    e.preventDefault()
     setLoading(true)
     setError(null)
 
-    // Store name so we can create the profile after the magic link redirect
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+
+    setLoading(false)
+    if (error) setError('Wrong email or password.')
+  }
+
+  async function handleSignUp(e) {
+    e.preventDefault()
+    if (!name.trim()) return
+    setLoading(true)
+    setError(null)
+
+    // Store name so ensureUserProfile can use it
     localStorage.setItem('tend_pending_name', name.trim())
 
-    const { error } = await supabase.auth.signInWithOtp({
+    const { error } = await supabase.auth.signUp({
       email: email.trim(),
-      options: {
-        emailRedirectTo: window.location.origin,
-      },
+      password,
+      options: { data: { display_name: name.trim() } },
     })
 
     setLoading(false)
-
-    if (error) {
-      setError(error.message)
-    } else {
-      setSent(true)
-    }
-  }
-
-  if (sent) {
-    return (
-      <div className="signin">
-        <div className="signin__card">
-          <div className="signin__sent-emoji">🌱</div>
-          <h1 className="signin__title">Check your email</h1>
-          <p className="signin__subtitle">
-            We sent a link to <strong>{email}</strong>.<br />
-            Tap it to open Tend.
-          </p>
-          <button
-            className="signin__resend"
-            onClick={() => { setSent(false) }}
-          >
-            Use a different email
-          </button>
-        </div>
-      </div>
-    )
+    if (error) setError(error.message)
+    // On success, onAuthStateChange in App.jsx fires and handles the rest
   }
 
   return (
@@ -63,45 +53,118 @@ export default function SignIn() {
         <h1 className="signin__title">Tend</h1>
         <p className="signin__subtitle">Tend your friendships.</p>
 
-        <form className="signin__form" onSubmit={handleSubmit}>
-          <div className="signin__field">
-            <label className="signin__label" htmlFor="name">Your name</label>
-            <input
-              id="name"
-              className="signin__input"
-              type="text"
-              placeholder="James"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              autoComplete="given-name"
-              required
-            />
-          </div>
+        {mode === 'signin' ? (
+          <form className="signin__form" onSubmit={handleSignIn}>
+            <div className="signin__field">
+              <label className="signin__label" htmlFor="email">Email</label>
+              <input
+                id="email"
+                className="signin__input"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
+            </div>
 
-          <div className="signin__field">
-            <label className="signin__label" htmlFor="email">Email</label>
-            <input
-              id="email"
-              className="signin__input"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
-          </div>
+            <div className="signin__field">
+              <label className="signin__label" htmlFor="password">Password</label>
+              <input
+                id="password"
+                className="signin__input"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+            </div>
 
-          {error && <p className="signin__error">{error}</p>}
+            {error && <p className="signin__error">{error}</p>}
 
-          <button
-            className="signin__submit"
-            type="submit"
-            disabled={loading || !name.trim() || !email.trim()}
-          >
-            {loading ? 'Sending…' : 'Send magic link'}
-          </button>
-        </form>
+            <button
+              className="signin__submit"
+              type="submit"
+              disabled={loading || !email.trim() || !password}
+            >
+              {loading ? 'Signing in…' : 'Sign in'}
+            </button>
+
+            <button
+              type="button"
+              className="signin__switch"
+              onClick={() => switchMode('signup')}
+            >
+              New here? Create an account
+            </button>
+          </form>
+        ) : (
+          <form className="signin__form" onSubmit={handleSignUp}>
+            <div className="signin__field">
+              <label className="signin__label" htmlFor="name">Your name</label>
+              <input
+                id="name"
+                className="signin__input"
+                type="text"
+                placeholder="James"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                autoComplete="given-name"
+                required
+              />
+            </div>
+
+            <div className="signin__field">
+              <label className="signin__label" htmlFor="email-up">Email</label>
+              <input
+                id="email-up"
+                className="signin__input"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
+            </div>
+
+            <div className="signin__field">
+              <label className="signin__label" htmlFor="password-up">Password</label>
+              <input
+                id="password-up"
+                className="signin__input"
+                type="password"
+                placeholder="at least 6 characters"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+                minLength={6}
+              />
+            </div>
+
+            {error && <p className="signin__error">{error}</p>}
+
+            <button
+              className="signin__submit"
+              type="submit"
+              disabled={loading || !name.trim() || !email.trim() || password.length < 6}
+            >
+              {loading ? 'Creating account…' : 'Create account'}
+            </button>
+
+            <button
+              type="button"
+              className="signin__switch"
+              onClick={() => switchMode('signin')}
+            >
+              Already have an account? Sign in
+            </button>
+          </form>
+        )}
       </div>
     </div>
   )

@@ -94,13 +94,13 @@
   cursor: default;
 }
 
-.signin__resend {
+.signin__resend,
+.signin__switch {
   background: none;
   border: none;
   font-family: var(--font-body);
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
   cursor: pointer;
-  margin-top: var(--space-4);
   text-decoration: underline;
 }

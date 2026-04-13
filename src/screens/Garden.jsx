@@ -230,6 +230,9 @@ export default function Garden({ user, onNavigate }) {
             <span className="garden__points-value">{userPoints}</span>
             <span className="garden__points-label">pts</span>
           </div>
+          <button className="garden__signout" onClick={() => supabase.auth.signOut()}>
+            sign out
+          </button>
         </div>
       </div>
 
